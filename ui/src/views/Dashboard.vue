@@ -23,6 +23,10 @@
         <v-col v-if="hasAggregatedValues" cols="12" md="6">
           <BytesHistogram />
         </v-col>
+
+        <v-col cols="12" md="12">
+          <BenchmarkHistogram />
+        </v-col>
       </v-row>
     </v-container>
   </div>
@@ -34,6 +38,7 @@ import ServersOverview from "../components/Dashboard/ServersOverview";
 import NamespacesOverview from "../components/Dashboard/NamespacesOverview";
 import ConnectionsHistogram from "../components/Dashboard/ConnectionsHistogram";
 import BytesHistogram from "../components/Dashboard/BytesHistogram";
+import BenchmarkHistogram from "../components/Dashboard/BenchmarkHistogram.vue";
 import { mapGetters } from "vuex";
 
 export default {
@@ -45,7 +50,8 @@ export default {
     ClientsOverview,
     ConnectionsHistogram,
     BytesHistogram,
-  },
+    BenchmarkHistogram
+},
 
   computed: {
     breadcrumbItems() {

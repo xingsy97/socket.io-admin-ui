@@ -12,7 +12,7 @@
           <v-text-field
             v-model="serverUrl"
             :label="$t('connection.serverUrl')"
-            placeholder="https://example.com"
+            placeholder="Azure Web PubSub Endpoint"
             required
           ></v-text-field>
           <v-text-field
@@ -93,10 +93,10 @@ export default {
 
   data() {
     return {
-      showAdvancedOptions: false,
-      serverUrl: this.initialServerUrl,
-      wsOnly: this.initialWsOnly,
-      path: this.initialPath,
+      showAdvancedOptions: true,
+      serverUrl: "ws://localhost:8080",
+      wsOnly: true,
+      path: "/clients/engineio/hubs/eio_hub",
       namespace: this.initialNamespace,
       username: "",
       password: "",

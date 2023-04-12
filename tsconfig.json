@@ -5,7 +5,8 @@
     "target": "es2017",
     "module": "commonjs",
     "strict": true,
-    "declaration": true
+    "declaration": true,
+    "noUnusedLocals": false,                      /* Report errors on unused locals. */
   },
   "include": [
     "./lib/**/*"
