@@ -1,152 +1,243 @@
 <template>
-    <v-card>
-        <v-btn color="primary" class="white--text" @click="startBenchmark"> Start Benchmark
-        </v-btn>
-
-        <v-btn color="primary" class="white--text" @click="endBenchmark"> End Benchmark
-        </v-btn>
-
-        <v-card-title class="text-center">
-            {{ $t("dashboard.benchmarkHistogram.title") }}
-        </v-card-title>
-
-        <v-card-text>
-            <v-row>
-                <Bar :chart-data="chartData" :chart-options="chartOptions" style="width: 100%" :height="chartHeight" />
-            </v-row>
-        </v-card-text>
-
-        <v-card-text>
-            <v-row>
-                <!-- <Bar :chart-data="chartData" :chart-options="chartOptions" style="width: 100%" :height="chartHeight" /> -->
-            </v-row>
-        </v-card-text>
-    </v-card>
-</template>
+    <v-container fluid>
+        <v-row>
+            <v-col cols="4" md="3" lg="3">
+                <v-btn color="primary" class="white--text" @click="startBenchmark(serverUrl, '/benchmark', wsOnly, path, parser)"> Start Benchmark </v-btn> <br><br>
+                <v-btn color="primary" class="white--text" @click="endBenchmark"> END Benchmark </v-btn>
+                <br>Total Clients <v-text-field class="white--text" v-model="maxClients" />
+                Client Send Per Second <v-text-field type="number" class="white--text"  v-model="emitPerSecond" />
+                Client Creation Interval (ms)<v-text-field type="number" class="white--text" v-model="clientCreationIntervalInMs" />
+                Total benchmark time (s)<v-text-field type="number" class="white--text" v-model="totalBenchmarkSeconds" />
+            </v-col>
+            
+            <v-col cols="8"  >
+                <v-chart class="chart" :option="option" autoresize />
+            </v-col>
+        </v-row>
+    </v-container>
+  </template>
   
-<script>
-import colors from "vuetify/lib/util/colors";
-import { Bar } from "vue-chartjs/legacy";
-// import { Bar } from "vue-chartjs/legacy";
-import { io } from "socket.io-client";
-
-export default {
-    name: "BenchmarkHistogram",
-    components: { Bar },
-    // components: { VLine},
+  <script>
+  import { mapState } from "vuex";
+  import { use } from 'echarts/core';
+  import { CanvasRenderer } from 'echarts/renderers';
+  import { LineChart, BarChart } from 'echarts/charts';
+  import {
+    TitleComponent,
+    TooltipComponent,
+    LegendComponent,
+    GridComponent,
+  } from 'echarts/components';
+  import VChart, { THEME_KEY } from 'vue-echarts';
+  import { ref, defineComponent, reactive } from 'vue';
+  import { io } from "socket.io-client";
+  
+  use([
+    CanvasRenderer,
+    LineChart,
+    TitleComponent,
+    TooltipComponent,
+    LegendComponent,
+    GridComponent,
+    BarChart
+  ]);
+  
+  export default defineComponent({
+    name: 'BenchmarkHistogram',
+    components: {
+      VChart,
+    },
+    provide: {
+      [THEME_KEY]: 'dark',
+    },
     data() {
         return {
-            chartHeight: 120,
-            chartOptions: {
-                parsing: false,
-                scales: {
-                    x: { type: "linear", beginAtZero: true, suggestedMax: 50, ticks: { precision: 1, }, },
-                    y: { type: "linear", beginAtZero: true, suggestedMax: 50, ticks: { precision: 1, }, },
-                },
-            },
-            startTime: 0,
-            packetsPerSecond: [],
-            timeTasks: [],
-            sockets: []
+            startTime : 0,
+            lifetimeDatas : [],
+            periodDatas : [],
+            timeTasks : [],
+            sockets : [],
+
+            maxClients: 1,
+            emitPerSecond: 50,
+            clientCreationIntervalInMs: 10,
+            totalBenchmarkSeconds: 60,
         };
+    },
+    setup() {
+      const chartData = reactive({
+        xAxisData: [],
+        seriesData: [],
+        seriesData2: [],
+        seriesData3: [],
+      });
+  
+      const option = reactive({
+        backgroundColor:'rgba(128, 128, 128, 0.1)',
+        tooltip: { trigger: 'axis', axisPointer: { type: 'cross' }, },
+        title: { text: 'Benchmark Chart', left: '10vh', top: "20vh"},
+        grid: {x: 70, y: 100, x2: 70, y2: 50},
+        xAxis: { type: 'value', name: "Time (s)", position: "center"},
+        yAxis: [ { type: 'value', name: "Packets Count", position: 'left', axisLabel: { formatter: '{value}' }},
+                 { type: 'value', name: "Round Trip Time (ms)", position: 'right', axisLabel: { formatter: '{value} ms' }}],
+        legend: {
+            orient: 'horizontal', top: "10%", left: "30%",
+            data: ['receivedPacketPerSecond', 'sentPacketPerSecond', 'maxRoundTripTimePerSecond']
+        },
+        series: [
+          {
+            name: "receivedPacketPerSecond",
+            data: chartData.seriesData,
+            type: 'bar',
+            color: "green",
+            yAxisIndex:0,
+            showAllSymbol: true,
+          },
+          {
+            name: "sentPacketPerSecond",
+            data: chartData.seriesData2,
+            type: 'bar',
+            color: "red",
+            yAxisIndex:0,
+            showAllSymbol: true,
+          },
+          {
+            name: "maxRoundTripTimePerSecond",
+            data: chartData.seriesData3,
+            type: 'line',
+            yAxisIndex:1,
+            showAllSymbol: true,
+          },
+        ],
+      });
+  
+      // 在需要更新数据时，修改chartData.xAxisData和chartData.seriesData
+
+      return { option, chartData };
     },
 
     computed: {
-        chartData() {
-            return {
-                datasets: [
-                    {
-                        label: this.$i18n.t("dashboard.benchmarkHistogram.PPS"),
-                        backgroundColor: colors.green.base,
-                        data: this.packetsPerSecond,
-                    },
-                    // {
-                    //   label: this.$i18n.t("dashboard.benchmarkHistogram.RTT"),
-                    //   backgroundColor: colors.red.base,
-                    //   data: this.roundTripTime,
-                    // },
-                ],
-            };
-        },
+        ...mapState({
+            serverUrl: (state) => state.connection.serverUrl,
+            wsOnly: (state) => state.connection.wsOnly,
+            path: (state) => state.connection.path,
+            namespace: (state) => state.connection.namespace,
+            parser: (state) => state.connection.parser,
+        }),
     },
 
-    created() { },
-
-    beforeDestroy() { clearInterval(this.interval); },
-
     methods: {
-        updateChartBounds() {
-            const now = new Date();
-            this.chartOptions.scales.x.max = (now - this.startTime) / 1000;
-        },
+        startBenchmark(serverUrl, namespace, wsOnly, path, parser) {
+            console.log(serverUrl);
+            var MAX_CLIENTS = this.maxClients; var EMIT_PER_SECOND = this.emitPerSecond; var CLIENT_CREATION_INTERVAL_IN_MS = this.clientCreationIntervalInMs;
+            console.log("MAX_CLIENTS=", MAX_CLIENTS, ",EMIT_PER_SECOND=", EMIT_PER_SECOND, ",CLIENT_CREATION_INTERVAL_IN_MS=", CLIENT_CREATION_INTERVAL_IN_MS);
 
-        startBenchmark() {
-            this.updateChartBounds();
-            this.interval = setInterval(this.updateChartBounds, 2000);
-            this.packetsPerSecond = [];
             this.endBenchmark();
+            // this.chartData.seriesData = [];
+            // this.chartData.seriesData2 = [];
+            // this.chartData.seriesData3 = [];
 
-            const ENDPOINT = "ws://localhost:3000";
-            const ENDPOINT_WPS = "ws://localhost:8080";
-            const MAX_CLIENTS = 1;
-            const EMIT_PER_SECOND = 50;
-            const CLIENT_CREATION_INTERVAL_IN_MS = 10;
+            var lifetimeData = { 
+                startTime : 0,
+                clientCount: 0,
+                totalReceivedPackets: 0,
+                totalEmittedPackets: 0,
+                totalRoundTripTime: 0,
+            }
 
-            var clientCount = 0;
-            var lastReport = new Date().getTime();
-            var packetsSinceLastReport = 0;
-            var totalEmittedPackets = 0;
-            var totalReceivedPackets = 0;
-            var totalRoundTripTime = 0;
-            var maxRoundTripTime = 0;
+            var periodData = {
+                startTime: 0,
+                maxRoundTripTime: 0
+            }
+
+            const updateChartData = (time) => {
+                console.log(time);
+                var i = this.lifetimeDatas.length - 1;
+                
+                if (i > 0) {
+                    let currentData = this.lifetimeDatas[i];
+                    let previousData = this.lifetimeDatas[i - 1];
+                    let duration = (currentData.x - previousData.x) / 1000.0;
+
+                    let v1 = (currentData.y["totalReceivedPackets"] - previousData.y["totalReceivedPackets"])  / duration;
+                    let v2 = (currentData.y["totalEmittedPackets"] - previousData.y["totalEmittedPackets"]) / duration;
+
+                    console.log("time=", time, ",duration=", duration, ",AVG RECEIVE=", v1, ",AVG SEND=", v2);
+
+                    this.chartData.seriesData.push( [time, v1.toFixed(1) ]) // / (EMIT_PER_SECOND *  duration) ] );
+                    this.chartData.seriesData2.push( [time, v2.toFixed(1) ]) /// (EMIT_PER_SECOND * duration)] );
+
+                    this.chartData.seriesData3.push( [time, this.periodDatas[i].y["maxRoundTripTime"] == 0 ? null : this.periodDatas[i].y["maxRoundTripTime"]  ] );
+                }  
+            };
 
             const createClient = () => {
                 const useWps = true;
                 const transports = ["websocket"];
 
-                const socket = useWps ? io(ENDPOINT_WPS + "/benchmark", { transports: transports, path: "/clients/engineio/hubs/eio_hub" })
-                    : io(ENDPOINT, { transports: transports });
+                const socket = useWps ? io(serverUrl + namespace, { transports: transports, path: path })
+                                      : io(serverUrl  + namespace, { transports: transports });
 
                 this.sockets.push(socket);
 
-                this.timeTasks.push(setInterval(() => {
-                    socket.emit("client to server event", Date.now());
-                    totalEmittedPackets++;
-                }, 1000 / EMIT_PER_SECOND));
+                socket.on("connect", () => {
+                    console.log("client connected");
+                    lifetimeData.clientCount++;
+                    this.timeTasks.push(setInterval(() => {
+                        for (var _ = 0; _ < EMIT_PER_SECOND; _++) {
+                            socket.emit("client to server event", new Date().getTime());
+                            lifetimeData.totalEmittedPackets++;
+                        }
+                    }, 1000));
+                });
 
                 socket.on("server to client event", (timestamp) => {
-                    let costTime = Date.now() - Number(timestamp);
-                    maxRoundTripTime = Math.max(maxRoundTripTime, costTime);
-                    totalRoundTripTime += Date.now() - Number(timestamp);
-                    totalReceivedPackets++;
-                    packetsSinceLastReport++;
+                    let costTime = new Date().getTime() - Number(timestamp);
+                    lifetimeData.totalRoundTripTime += costTime;
+                    lifetimeData.totalReceivedPackets ++;
+                    periodData.maxRoundTripTime = Math.max(periodData.maxRoundTripTime, costTime);
                 });
 
                 socket.on("disconnect", (reason) => {
                     console.log(`disconnect due to ${reason}`);
                 });
 
-                if (++clientCount < MAX_CLIENTS) {
+                if (lifetimeData.clientCount + 1 < MAX_CLIENTS) {
                     this.timeTasks.push(setTimeout(createClient, CLIENT_CREATION_INTERVAL_IN_MS));
                 }
+                
             };
 
-            this.timeTasks.push(createClient());
+            createClient();
             this.startTime = new Date().getTime();
+            periodData.startTime = this.startTime;
+            lifetimeData.startTime = this.startTime;
+            this.periodDatas.push({x: 0, y: Object.assign({}, periodData) });
+            this.lifetimeDatas.push({x: 0, y: Object.assign({}, lifetimeData) });
 
             const report = () => {
+                if (this.periodDatas.length > this.totalBenchmarkSeconds) {
+                    this.endBenchmark();
+                    return ;
+                }
+
                 const now = new Date().getTime();
-                const durationSinceLastReport = (now - lastReport) / 1000;
-                const packetsPerSecond = (packetsSinceLastReport / durationSinceLastReport).toFixed(2);
+                periodData["duration"] = (now - periodData["startTime"] );
 
-                console.log(
-                    `${clientCount} Clients, |PKTS RECV| = ${totalReceivedPackets} , PPS = ${packetsPerSecond} ; AVG RTT = ${totalRoundTripTime / totalReceivedPackets} ms ; MAX RTT = ${maxRoundTripTime} ms, |Emitted| = ${totalEmittedPackets}`
-                );
+                console.log(`${lifetimeData.clientCount} Clients, ${JSON.stringify(periodData)}, ${JSON.stringify(lifetimeData)}`);
 
-                this.packetsPerSecond.push({ x: (new Date().getTime() - this.startTime) / 1000, y: parseFloat(packetsPerSecond) });
+                this.lifetimeDatas.push({ x: (new Date().getTime() - this.startTime) , y: Object.assign({}, lifetimeData) });
+                this.periodDatas.push({ x: (new Date().getTime() - this.startTime) , y: Object.assign({}, periodData) });
 
-                packetsSinceLastReport = 0;
-                lastReport = now;
+                // lifetimeData = Object.assign({}, lifetimeData);
+                // periodData = Object.assign({}, periodData);
+
+                periodData = {
+                    startTime: new Date().getTime(),
+                    maxRoundTripTime: 0
+                }
+
+                updateChartData((now - this.startTime) / 1000);
             };
 
             this.timeTasks.push(setInterval(() => { report(); }, 1000));
@@ -160,8 +251,16 @@ export default {
                 socket.close();
             });
             this.sockets = [];
+            this.lifetimeDatas = [];
+            this.periodDatas = [];
         }
     },
-};
-</script>
+  });
+  </script>
   
+  <style scoped>
+  .chart {
+    height: 70vh;
+    width: 180vh;
+  }
+  </style>

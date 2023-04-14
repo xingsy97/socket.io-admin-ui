@@ -24,7 +24,7 @@
           <BytesHistogram />
         </v-col>
 
-        <v-col cols="12" md="12">
+        <v-col cols="6" md="8">
           <BenchmarkHistogram />
         </v-col>
       </v-row>
@@ -38,7 +38,7 @@ import ServersOverview from "../components/Dashboard/ServersOverview";
 import NamespacesOverview from "../components/Dashboard/NamespacesOverview";
 import ConnectionsHistogram from "../components/Dashboard/ConnectionsHistogram";
 import BytesHistogram from "../components/Dashboard/BytesHistogram";
-import BenchmarkHistogram from "../components/Dashboard/BenchmarkHistogram.vue";
+import BenchmarkHistogram from "../components/Dashboard/BenchmarkHistogram";
 import { mapGetters } from "vuex";
 
 export default {
@@ -50,7 +50,7 @@ export default {
     ClientsOverview,
     ConnectionsHistogram,
     BytesHistogram,
-    BenchmarkHistogram
+    BenchmarkHistogram,
 },
 
   computed: {
