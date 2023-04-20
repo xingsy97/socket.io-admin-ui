@@ -96,7 +96,7 @@ export default {
       showAdvancedOptions: true,
       serverUrl: "ws://localhost:8080",
       wsOnly: true,
-      path: "/clients/engineio/hubs/eio_hub",
+      path: "/clients/socketio/hubs/eio_hub",
       namespace: this.initialNamespace,
       username: "",
       password: "",

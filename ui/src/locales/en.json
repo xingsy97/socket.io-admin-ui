@@ -117,5 +117,14 @@
     "eventArgs": "Event arguments",
     "reason": "Reason",
     "room": "Room"
+  },
+  "benchmark": {
+    "title": "Benchmark",
+    "benchmarkHistogram": {
+      "title": "Benchmark",
+      "PPS": "Packets per second (AVG)",
+      "RTT": "Round-trip time (AVG)",
+      "MRTT": "Round-trip time (MAX)"
+    }
   }
 }

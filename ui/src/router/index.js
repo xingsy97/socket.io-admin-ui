@@ -1,5 +1,6 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
+import Benchmark from "../views/Benchmark";
 import Dashboard from "../views/Dashboard";
 import Sockets from "../views/Sockets";
 import Socket from "../views/Socket";
@@ -89,6 +90,15 @@ const routes = [
     meta: {
       topLevel: true,
       index: 5,
+    },
+  },
+  {
+    path: "/benchmark",
+    name: "benchmark",
+    component: Benchmark,
+    meta: {
+      topLevel: true,
+      index: 6,
     },
   },
 ];
