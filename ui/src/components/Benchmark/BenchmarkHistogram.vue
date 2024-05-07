@@ -2,7 +2,7 @@
     <v-container fluid>
         <v-row>
             <v-col cols="4" md="3" lg="3">
-                <v-btn color="primary" class="white--text" @click="startBenchmark(serviceEndpoint, '/benchmark', wsOnly, path, parser)"> Start Benchmark </v-btn> <br><br>
+                <v-btn color="primary" class="white--text" @click="startBenchmark(serviceEndpoint, '/echoBenchmark', wsOnly, path, parser)"> Start Benchmark </v-btn> <br><br>
                 <v-btn color="primary" class="white--text" @click="endBenchmark"> END Benchmark </v-btn>
                 <br>Total Clients <v-text-field class="white--text" v-model="maxClients" />
                 Client Send Per Second <v-text-field type="number" class="white--text"  v-model="emitPerSecond" />

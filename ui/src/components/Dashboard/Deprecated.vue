@@ -155,8 +155,8 @@ export default {
                 const useWps = true;
                 const transports = ["websocket"];
 
-                const socket = useWps ? io(ENDPOINT_WPS + "/benchmark", { transports: transports, path: "/clients/socketio/hubs/eio_hub" })
-                                      : io(ENDPOINT  + "/benchmark", { transports: transports });
+                const socket = useWps ? io(ENDPOINT_WPS + "/echoBenchmark", { transports: transports, path: "/clients/socketio/hubs/eio_hub" })
+                                      : io(ENDPOINT  + "/echoBenchmark", { transports: transports });
 
                 this.sockets.push(socket);
 

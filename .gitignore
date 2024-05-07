@@ -2,8 +2,6 @@
 node_modules
 .nyc_output
 dist*
-ui/dist/*
-
 
 # local env files
 .env.local

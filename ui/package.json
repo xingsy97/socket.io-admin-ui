@@ -3,6 +3,7 @@
   "version": "0.5.1",
   "private": true,
   "scripts": {
+    "good-install": "CXXFLAGS=\"--std=c++17\" yarn install",
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",

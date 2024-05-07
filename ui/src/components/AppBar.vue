@@ -6,7 +6,7 @@
     />
 
     <v-img :src="logoSrc" alt="logo" max-height="40" max-width="40" />
-    <v-toolbar-title class="ml-3">Socket.IO Admin UI for Azure Socket.IO</v-toolbar-title>
+    <v-toolbar-title class="ml-3">Azure Socket.IO Admin UI</v-toolbar-title>
     <v-btn small class="pa-0 ml-2 elevation-0" :href="linkToReleaseNotes">{{
       version
     }}</v-btn>

@@ -6,7 +6,7 @@ module.exports = {
   },
   chainWebpack: (config) => {
     config.plugin("html").tap((args) => {
-      args[0].title = "Socket.IO Admin UI";
+      args[0].title = "Azure Socket.IO Admin UI";
       return args;
     });
     config.plugin("define").tap((args) => {

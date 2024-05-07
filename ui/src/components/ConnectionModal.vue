@@ -2,7 +2,7 @@
   <v-dialog
     :value="isOpen"
     transition="dialog-bottom-transition"
-    max-width="300"
+    max-width="500"
     persistent
   >
     <v-card>
@@ -103,7 +103,7 @@ export default {
   data() {
     return {
       showAdvancedOptions: true,
-      serviceEndpoint: "ws://localhost:8080",
+      serviceEndpoint: "https://<resource-name>.webpubsub.azure.com",
       hub: "eio_hub",
       wsOnly: true,
       namespace: this.initialNamespace,
