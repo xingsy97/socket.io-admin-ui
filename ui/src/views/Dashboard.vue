@@ -45,7 +45,7 @@ export default {
     ClientsOverview,
     ConnectionsHistogram,
     BytesHistogram,
-  },
+},
 
   computed: {
     breadcrumbItems() {

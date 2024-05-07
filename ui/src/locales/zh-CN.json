@@ -16,7 +16,8 @@
   "disconnected": "未连接",
   "connection": {
     "title": "连接",
-    "serverUrl": "服务器 URL",
+    "hub": "Hub",
+    "serverUrl": "服务器 终结点",
     "username": "用户名",
     "password": "密码",
     "connect": "提交",

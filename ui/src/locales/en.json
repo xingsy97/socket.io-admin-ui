@@ -19,7 +19,8 @@
   "args": "Arguments",
   "connection": {
     "title": "Connection",
-    "serverUrl": "Server URL",
+    "hub": "Hub",
+    "serviceEndpoint": "Service Endpoint",
     "username": "Username",
     "password": "Password",
     "connect": "Connect",
@@ -42,6 +43,12 @@
       "title": "Bytes received and sent",
       "bytesIn": "Bytes received",
       "bytesOut": "Bytes sent"
+    },
+    "benchmarkHistogram": {
+      "title": "Benchmark",
+      "PPS": "Packets per second (AVG)",
+      "RTT": "Round-trip time (AVG)",
+      "MRTT": "Round-trip time (MAX)"
     }
   },
   "sockets": {
@@ -111,5 +118,14 @@
     "eventArgs": "Event arguments",
     "reason": "Reason",
     "room": "Room"
+  },
+  "benchmark": {
+    "title": "Benchmark",
+    "benchmarkHistogram": {
+      "title": "Benchmark",
+      "PPS": "Packets per second (AVG)",
+      "RTT": "Round-trip time (AVG)",
+      "MRTT": "Round-trip time (MAX)"
+    }
   }
 }

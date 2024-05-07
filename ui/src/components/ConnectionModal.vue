@@ -10,11 +10,24 @@
       <v-card-text>
         <form @submit.prevent="onSubmit">
           <v-text-field
-            v-model="serverUrl"
-            :label="$t('connection.serverUrl')"
-            placeholder="https://example.com"
+            v-model="serviceEndpoint"
+            :label="$t('connection.serviceEndpoint')"
+            placeholder="Azure Web PubSub Endpoint"
             required
           ></v-text-field>
+          <v-text-field
+            v-model="hub"
+            :label="$t('connection.hub')"
+            placeholder="Azure Web PubSub Hub Name"
+            required
+          ></v-text-field>
+
+          <v-text-field
+              v-model="path"
+              disabled
+              :label="$t('connection.path')"
+          ></v-text-field>
+
           <v-text-field
             v-model="username"
             :label="$t('connection.username')"
@@ -45,11 +58,6 @@
               <v-text-field
                 v-model="namespace"
                 :label="$t('connection.namespace')"
-              ></v-text-field>
-
-              <v-text-field
-                v-model="path"
-                :label="$t('connection.path')"
               ></v-text-field>
 
               <v-select
@@ -83,7 +91,8 @@ export default {
   props: {
     isOpen: Boolean,
     isConnecting: Boolean,
-    initialServerUrl: String,
+    initialServiceEndpoint: String,
+    initialHub: String,
     initialWsOnly: Boolean,
     initialPath: String,
     initialNamespace: String,
@@ -93,10 +102,10 @@ export default {
 
   data() {
     return {
-      showAdvancedOptions: false,
-      serverUrl: this.initialServerUrl,
-      wsOnly: this.initialWsOnly,
-      path: this.initialPath,
+      showAdvancedOptions: true,
+      serviceEndpoint: "ws://localhost:8080",
+      hub: "eio_hub",
+      wsOnly: true,
       namespace: this.initialNamespace,
       username: "",
       password: "",
@@ -115,8 +124,11 @@ export default {
   },
 
   computed: {
+    path() {
+      return `/clients/socketio/hubs/${this.hub}`;
+    },
     isValid() {
-      return this.serverUrl && this.serverUrl.length;
+      return this.serviceEndpoint && this.serviceEndpoint.length;
     },
     errorMessage() {
       return this.error === "invalid credentials"
@@ -128,7 +140,8 @@ export default {
   methods: {
     onSubmit() {
       this.$emit("submit", {
-        serverUrl: this.serverUrl,
+        serviceEndpoint: this.serviceEndpoint,
+        hub: this.hub,
         wsOnly: this.wsOnly,
         path: this.path,
         namespace: this.namespace,

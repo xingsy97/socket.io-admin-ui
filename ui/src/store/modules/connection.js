@@ -3,7 +3,7 @@ import { isLocalStorageAvailable } from "../../util";
 export default {
   namespaced: true,
   state: {
-    serverUrl: "",
+    serviceEndpoint: "",
     wsOnly: false,
     path: "/socket.io",
     namespace: "/admin",
@@ -14,10 +14,10 @@ export default {
   mutations: {
     init(state) {
       if (isLocalStorageAvailable) {
-        state.serverUrl = localStorage.getItem("server_url") || "";
-        if (state.serverUrl.endsWith("/admin")) {
+        state.serviceEndpoint = localStorage.getItem("server_url") || "";
+        if (state.serviceEndpoint.endsWith("/admin")) {
           // for backward compatibility
-          state.serverUrl = state.serverUrl.slice(0, -6);
+          state.serviceEndpoint = state.serviceEndpoint.slice(0, -6);
         } else {
           state.namespace = localStorage.getItem("namespace") || "/admin";
         }
@@ -27,14 +27,14 @@ export default {
         state.parser = localStorage.getItem("parser") || "default";
       }
     },
-    saveConfig(state, { serverUrl, wsOnly, path, namespace, parser }) {
-      state.serverUrl = serverUrl;
+    saveConfig(state, { serviceEndpoint, wsOnly, path, namespace, parser }) {
+      state.serviceEndpoint = serviceEndpoint;
       state.wsOnly = wsOnly;
       state.path = path;
       state.namespace = namespace;
       state.parser = parser;
       if (isLocalStorageAvailable) {
-        localStorage.setItem("server_url", serverUrl);
+        localStorage.setItem("server_url", serviceEndpoint);
         localStorage.setItem("ws_only", wsOnly);
         localStorage.setItem("path", path);
         localStorage.setItem("namespace", namespace);

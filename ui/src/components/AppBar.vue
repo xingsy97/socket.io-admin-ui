@@ -6,7 +6,7 @@
     />
 
     <v-img :src="logoSrc" alt="logo" max-height="40" max-width="40" />
-    <v-toolbar-title class="ml-3">Socket.IO Admin UI</v-toolbar-title>
+    <v-toolbar-title class="ml-3">Socket.IO Admin UI for Azure Socket.IO</v-toolbar-title>
     <v-btn small class="pa-0 ml-2 elevation-0" :href="linkToReleaseNotes">{{
       version
     }}</v-btn>
@@ -16,8 +16,8 @@
     <div class="d-none d-lg-flex">
       <div>
         <div>
-          {{ $t("connection.serverUrl") }}{{ $t("separator")
-          }}<code v-if="serverUrl">{{ serverUrl }}</code>
+          {{ $t("connection.serviceEndpoint") }}{{ $t("separator")
+          }}<code v-if="serviceEndpoint">{{ serviceEndpoint }}</code>
         </div>
         <div>
           {{ $t("status") }}{{ $t("separator")
@@ -33,8 +33,8 @@
     <template v-slot:extension>
       <div class="d-flex flex-column d-lg-none">
         <div class="mt-3">
-          {{ $t("connection.serverUrl") }}{{ $t("separator")
-          }}<code v-if="serverUrl">{{ serverUrl }}</code>
+          {{ $t("connection.serviceEndpoint") }}{{ $t("separator")
+          }}<code v-if="serviceEndpoint">{{ serviceEndpoint }}</code>
         </div>
         <div class="mt-3 mb-3">
           {{ $t("status") }}{{ $t("separator")
@@ -71,7 +71,7 @@ export default {
         state.config.darkTheme
           ? require("../assets/logo-dark.svg")
           : require("../assets/logo-light.svg"),
-      serverUrl: (state) => state.connection.serverUrl,
+      serviceEndpoint: (state) => state.connection.serviceEndpoint,
       connected: (state) => state.connection.connected,
     }),
     linkToReleaseNotes() {

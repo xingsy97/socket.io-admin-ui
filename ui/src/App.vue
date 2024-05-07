@@ -14,7 +14,8 @@
 
     <ConnectionModal
       :is-open="showConnectionModal"
-      :initial-server-url="serverUrl"
+      :initial-service-endpoint="serviceEndpoint"
+      :initial-hub="hub"
       :initial-ws-only="wsOnly"
       :initial-path="path"
       :initial-namespace="namespace"
@@ -68,7 +69,8 @@ export default {
 
   computed: {
     ...mapState({
-      serverUrl: (state) => state.connection.serverUrl,
+      serviceEndpoint: (state) => state.connection.serviceEndpoint,
+      hub: (state) => state.connection.hub,
       wsOnly: (state) => state.connection.wsOnly,
       path: (state) => state.connection.path,
       namespace: (state) => state.connection.namespace,
@@ -94,7 +96,7 @@ export default {
   },
 
   methods: {
-    tryConnect(serverUrl, namespace, auth, wsOnly, path, parser) {
+    tryConnect(serviceEndpoint, namespace, auth, wsOnly, path, parser) {
       this.isConnecting = true;
       if (SocketHolder.socket) {
         SocketHolder.socket.disconnect();
@@ -102,7 +104,7 @@ export default {
         SocketHolder.socket.off("connect_error");
         SocketHolder.socket.off("disconnect");
       }
-      const socket = io(serverUrl + namespace, {
+      const socket = io(serviceEndpoint + namespace, {
         forceNew: true,
         reconnection: false,
         withCredentials: true, // needed for cookie-based sticky-sessions
@@ -118,7 +120,7 @@ export default {
 
         socket.io.reconnection(true);
         this.$store.commit("connection/saveConfig", {
-          serverUrl,
+          serviceEndpoint,
           wsOnly,
           path,
           namespace,
@@ -212,7 +214,7 @@ export default {
 
     onSubmit(form) {
       this.tryConnect(
-        form.serverUrl,
+        form.serviceEndpoint,
         form.namespace,
         {
           username: form.username,
@@ -223,6 +225,7 @@ export default {
         form.parser
       );
     },
+
   },
 
   created() {
@@ -231,10 +234,10 @@ export default {
       this.$store.commit("config/toggleNavigationDrawer");
     }
 
-    if (this.serverUrl) {
+    if (this.serviceEndpoint) {
       const sessionId = this.$store.state.connection.sessionId;
       this.tryConnect(
-        this.serverUrl,
+        this.serviceEndpoint,
         this.namespace,
         {
           sessionId,

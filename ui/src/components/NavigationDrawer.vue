@@ -80,6 +80,11 @@ export default {
             icon: "mdi-server",
             to: { name: "servers" },
           },
+          {
+            title: this.$t("benchmark.title"),
+            icon: "mdi-server",
+            to: { name: "benchmark" },
+          }
         ];
       } else {
         return [
@@ -94,6 +99,11 @@ export default {
             icon: "mdi-server",
             to: { name: "servers" },
           },
+          {
+            title: this.$t("benchmark.title"),
+            icon: "mdi-server",
+            to: { name: "benchmark" },
+          }
         ];
       }
     },
