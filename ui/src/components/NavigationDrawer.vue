@@ -82,7 +82,7 @@ export default {
           },
           {
             title: this.$t("benchmark.title"),
-            icon: "mdi-server",
+            icon: "mdi-speedometer",
             to: { name: "benchmark" },
           }
         ];

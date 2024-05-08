@@ -27,6 +27,7 @@
     "invalid-credentials": "Invalid credentials",
     "error": "Error",
     "websocket-only": "WebSocket only?",
+    "queryString": "Connect Query String (Example: access_token=a.b.c&k=v)",
     "path": "Path",
     "parser": "Parser",
     "default-parser": "Built-in parser",
@@ -121,6 +122,7 @@
   },
   "benchmark": {
     "title": "Benchmark",
+    "detailedTitle": "Simple Echo Benchmark",
     "benchmarkHistogram": {
       "title": "Benchmark",
       "PPS": "Packets per second (AVG)",

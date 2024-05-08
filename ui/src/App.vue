@@ -19,6 +19,7 @@
       :initial-ws-only="wsOnly"
       :initial-path="path"
       :initial-namespace="namespace"
+      :initial-query-string="queryString"
       :initial-parser="parser"
       :is-connecting="isConnecting"
       :error="connectionError"
@@ -74,6 +75,7 @@ export default {
       wsOnly: (state) => state.connection.wsOnly,
       path: (state) => state.connection.path,
       namespace: (state) => state.connection.namespace,
+      queryString: (state) => state.connection.queryString,
       parser: (state) => state.connection.parser,
       backgroundColor: (state) =>
         state.config.darkTheme ? "" : "grey lighten-5",
@@ -96,7 +98,7 @@ export default {
   },
 
   methods: {
-    tryConnect(serviceEndpoint, namespace, auth, wsOnly, path, parser) {
+    tryConnect(serviceEndpoint, namespace, queryString, auth, wsOnly, path, parser) {
       this.isConnecting = true;
       if (SocketHolder.socket) {
         SocketHolder.socket.disconnect();
@@ -112,6 +114,9 @@ export default {
         path,
         parser: parser === "msgpack" ? msgpackParser : null,
         auth,
+        query: {
+          ...Object.fromEntries(new URLSearchParams(queryString)),
+        }
       });
       socket.once("connect", () => {
         this.showConnectionModal = false;
@@ -216,6 +221,7 @@ export default {
       this.tryConnect(
         form.serviceEndpoint,
         form.namespace,
+        form.queryString,
         {
           username: form.username,
           password: form.password,
@@ -239,6 +245,7 @@ export default {
       this.tryConnect(
         this.serviceEndpoint,
         this.namespace,
+        this.queryString,
         {
           sessionId,
         },

@@ -2,7 +2,7 @@
   <v-dialog
     :value="isOpen"
     transition="dialog-bottom-transition"
-    max-width="500"
+    max-width="550"
     persistent
   >
     <v-card>
@@ -56,6 +56,13 @@
               />
 
               <v-text-field
+                v-model="queryString"
+                caption
+                :label="$t('connection.queryString')"
+                clearable
+              ></v-text-field>
+
+              <v-text-field
                 v-model="namespace"
                 :label="$t('connection.namespace')"
               ></v-text-field>
@@ -96,6 +103,7 @@ export default {
     initialWsOnly: Boolean,
     initialPath: String,
     initialNamespace: String,
+    initialQueryString: String,
     initialParser: String,
     error: String,
   },
@@ -109,6 +117,7 @@ export default {
       namespace: this.initialNamespace,
       username: "",
       password: "",
+      queryString: this.initialQueryString,
       parser: this.initialParser,
       parserOptions: [
         {
@@ -145,6 +154,7 @@ export default {
         wsOnly: this.wsOnly,
         path: this.path,
         namespace: this.namespace,
+        queryString: this.queryString,
         username: this.username,
         password: this.password,
         parser: this.parser,

@@ -29,7 +29,7 @@ export default {
   mutations: {
     onServerStats(state, stats) {
       stats.lastPing = Date.now();
-      const server = find(state.servers, { serverId: stats.serverId });
+      const server = find(state.servers, { serverId: stats.serverId, pid: stats.pid });
       if (server) {
         merge(server, stats);
       } else {
